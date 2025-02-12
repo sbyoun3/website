@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My GitHub Repositories</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      background-color: #f4f4f4;
+    }
+    h1 {
+      text-align: center;
+    }
+    #repo-list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .repo {
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      margin: 10px;
+      padding: 15px;
+      width: 250px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    .repo h3 {
+      margin: 0 0 10px;
+      font-size: 1.2em;
+    }
+    .repo button {
+      padding: 10px 20px;
+      border: none;
+      background-color: #007acc;
+      color: white;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 1em;
+    }
+    .repo button:hover {
+      background-color: #005fa3;
+    }
+  </style>
+</head>
+<body>
+  <h1>My GitHub Repositories</h1>
+  <div id="repo-list">
+    <!-- Repository cards will be inserted here -->
+  </div>
+
+  <script>
+    // Set your GitHub username here.
+    const username = "sbyoun3";
+    // GitHub API endpoint for your repositories.
+    const apiUrl = `https://api.github.com/users/${username}/repos`;
+
+    // Fetch your repositories from GitHub.
+    async function fetchRepos() {
+      try {
+        const response = await fetch(apiUrl);
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const repos = await response.json();
+        console.log("Fetched Repositories:", repos); // Debugging output
+        displayRepos(repos);
+      } catch (error) {
+        console.error('Error fetching repositories:', error);
+      }
+    }
+
+    // Display each repository as a card with a button.
+    function displayRepos(repos) {
+      const repoList = document.getElementById("repo-list");
+      
+      if (repos.length === 0) {
+        repoList.innerHTML = "<p>No repositories found.</p>";
+        return;
+      }
+      
+      // Optionally, sort repositories alphabetically.
+      repos.sort((a, b) => a.name.localeCompare(b.name));
+
+      repos.forEach(repo => {
+        // Create a container for each repository.
+        const repoDiv = document.createElement("div");
+        repoDiv.className = "repo";
+
+        // Add the repository name.
+        const repoName = document.createElement("h3");
+        repoName.textContent = repo.name;
+        repoDiv.appendChild(repoName);
+
+        // Create a button to view the repository.
+        const repoButton = document.createElement("button");
+        repoButton.textContent = "View Repository";
+        repoButton.addEventListener("click", () => {
+          // Use the homepage if provided, otherwise default to the GitHub repository URL.
+          const url = repo.homepage ? repo.homepage : repo.html_url;
+          window.open(url, '_blank');
+        });
+        repoDiv.appendChild(repoButton);
+
+        // Append the repository card to the list.
+        repoList.appendChild(repoDiv);
+      });
+    }
+
+    // Start fetching repositories when the page loads.
+    document.addEventListener("DOMContentLoaded", fetchRepos);
+  </script>
+</body>
+</html>
