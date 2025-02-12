@@ -2,114 +2,178 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>My GitHub Repositories</title>
+  <title>My GitHub Portfolio</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 40px;
-      background-color: #f4f4f4;
+    :root {
+      --primary: #6366f1;
+      --secondary: #a855f7;
+      --accent: #ec4899;
     }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(135deg, 
+        rgba(99, 102, 241, 0.1) 0%, 
+        rgba(168, 85, 247, 0.1) 50%, 
+        rgba(236, 72, 153, 0.1) 100%);
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    .background-effect {
+      position: fixed;
+      width: 100vw;
+      height: 100vh;
+      background: radial-gradient(circle at 50% 50%, 
+        rgba(99, 102, 241, 0.15) 0%, 
+        transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
     h1 {
       text-align: center;
+      padding: 2rem 0;
+      color: #1f2937;
+      font-size: 2.5rem;
+      position: relative;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
+
     #repo-list {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      position: relative;
     }
+
     .repo {
-      background-color: #fff;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      margin: 10px;
-      padding: 15px;
-      width: 250px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      text-align: center;
-    }
-    .repo h3 {
-      margin: 0 0 10px;
-      font-size: 1.2em;
-    }
-    .repo button {
-      padding: 10px 20px;
-      border: none;
-      background-color: #007acc;
-      color: white;
-      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 1.5rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+                  0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      transform: translateY(0);
       cursor: pointer;
-      font-size: 1em;
+      position: relative;
+      overflow: hidden;
     }
+
+    .repo:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+                  0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    .repo::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, 
+        transparent 0%, 
+        rgba(99, 102, 241, 0.1) 50%, 
+        transparent 100%);
+      animation: rotate 6s linear infinite;
+    }
+
+    @keyframes rotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .repo h3 {
+      margin: 0 0 1rem;
+      color: #1f2937;
+      font-size: 1.25rem;
+      position: relative;
+    }
+
+    .repo button {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      background: linear-gradient(45deg, var(--primary), var(--secondary));
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
     .repo button:hover {
-      background-color: #005fa3;
+      transform: scale(1.05);
+      box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.3),
+                  0 2px 4px -1px rgba(168, 85, 247, 0.3);
+    }
+
+    @media (max-width: 768px) {
+      #repo-list {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+      }
+      
+      h1 {
+        font-size: 2rem;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>My GitHub Repositories</h1>
+  <div class="background-effect"></div>
+  <h1>sedea1386's Work of CS</h1>
   <div id="repo-list">
     <!-- Repository cards will be inserted here -->
   </div>
 
   <script>
-    // Set your GitHub username here.
+    // Previous JavaScript code remains the same
     const username = "sbyoun3";
-    // GitHub API endpoint for your repositories.
     const apiUrl = `https://api.github.com/users/${username}/repos`;
 
-    // Fetch your repositories from GitHub.
     async function fetchRepos() {
       try {
         const response = await fetch(apiUrl);
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
         const repos = await response.json();
-        console.log("Fetched Repositories:", repos); // Debugging output
         displayRepos(repos);
       } catch (error) {
-        console.error('Error fetching repositories:', error);
+        console.error('Error:', error);
       }
     }
 
-    // Display each repository as a card with a button.
     function displayRepos(repos) {
       const repoList = document.getElementById("repo-list");
-      
-      if (repos.length === 0) {
-        repoList.innerHTML = "<p>No repositories found.</p>";
-        return;
-      }
-      
-      // Optionally, sort repositories alphabetically.
       repos.sort((a, b) => a.name.localeCompare(b.name));
 
       repos.forEach(repo => {
-        // Create a container for each repository.
         const repoDiv = document.createElement("div");
         repoDiv.className = "repo";
-
-        // Add the repository name.
+        
         const repoName = document.createElement("h3");
         repoName.textContent = repo.name;
-        repoDiv.appendChild(repoName);
-
-        // Create a button to view the repository.
+        
         const repoButton = document.createElement("button");
         repoButton.textContent = "View Repository";
-        repoButton.addEventListener("click", () => {
-          // Use the homepage if provided, otherwise default to the GitHub repository URL.
-          const url = repo.homepage ? repo.homepage : repo.html_url;
-          window.open(url, '_blank');
-        });
-        repoDiv.appendChild(repoButton);
+        repoButton.onclick = () => window.open(repo.html_url, '_blank');
 
-        // Append the repository card to the list.
+        repoDiv.appendChild(repoName);
+        repoDiv.appendChild(repoButton);
         repoList.appendChild(repoDiv);
       });
     }
 
-    // Start fetching repositories when the page loads.
     document.addEventListener("DOMContentLoaded", fetchRepos);
   </script>
 </body>
